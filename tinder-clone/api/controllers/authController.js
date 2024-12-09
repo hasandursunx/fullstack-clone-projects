@@ -32,7 +32,7 @@ export const signup = async (req, res) => {
         }
 
         const newUser = await User.create({
-            username,
+            name,
             email,
             password,
             age,
@@ -100,7 +100,8 @@ export const login = async (req, res) => {
         res.status(500).json({ success: false, message: "Server error" })
     }
 }
+
 export const logout = async (req, res) => {
-    req.clearCookie("jwt");
-    res.status.json({ success: true, logout: 'Logged out successfully' })
-}
+    res.clearCookie("jwt");
+    res.status(200).json({ success: true, message: "Logged out successfully" });
+};
