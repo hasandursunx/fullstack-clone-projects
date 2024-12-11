@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore"
 import { Flame, User, LogOut, Menu } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -8,6 +8,18 @@ const Header = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
 
     return (
         <header className="bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 shadow-lg">
@@ -60,14 +72,14 @@ const Header = () => {
                             ) : (
                                 <>
                                     <Link
-                                        to='login'
+                                        to='/auth'
                                         className="text-white hover:text-pink-200 transition duration-150 ease-in-out"
                                     >
                                         Login
                                     </Link>
 
                                     <Link
-                                        to='register'
+                                        to='/auth'
                                         className="bg-white text-pink-600 px-4 py-2 rounded-full font-medium
                                         hover:bg-pink-100 transition duration-150 ease-in-out"
                                     >
@@ -85,6 +97,51 @@ const Header = () => {
                     </div>
                 </div>
             </div>
+            {
+                mobileMenuOpen && (
+                    <div className="md:hidden bg-pink-600">
+                        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                            {
+                                authUser ? (
+                                    <>
+                                        <Link
+                                            to='/profile'
+                                            className="block px-3 py-2 rounded-md text-base font-bold text-white hover:bg-pink-700"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            Profile
+                                        </Link>
+                                        <button
+                                            onClick={() => {
+                                                logout();
+                                                setMobileMenuOpen(false);
+                                            }}
+                                            className="block w-full text-left px-3 py-2 rounded-md text-base text-white hover:bg-pink-700"
+                                        >
+                                            Logout
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link to='/auth'
+                                            className="block w-full text-left px-3 py-2 rounded-md text-base text-white hover:bg-pink-700"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            Login
+                                        </Link>
+                                        <Link to='/auth'
+                                            className="block w-full text-left px-3 py-2 rounded-md text-base text-white hover:bg-pink-700"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                        >
+                                            Sign Up
+                                        </Link>
+                                    </>
+                                )
+                            }
+                        </div>
+                    </div>
+                )
+            }
         </header>
     )
 }
